@@ -26,8 +26,7 @@ Installation:
 
 After dependencies are satisfied you can install with easy_install or pip. First download the package.
 ::
-	$ wget http://github.com/mangroveorg/python-shapeshifter/tarball/master
-
+	$ wget https://github.com/mangroveorg/python-shapeshifter/tarball/master --no-check-certificate -o python-shapeshifter.tar.gz
 
 Install with easy_install
 ::
@@ -41,10 +40,17 @@ An "Old school" install
 
 Usage:
 ======
-shapeshifter.py shapefile.dbf country_code level[1|2] <xls|csv|json> <outfile>
 
-The level indocates wheather the shapfile you are reading is statelevel (i.e.
-subdivision / level 1) or county level (i.e. level 2).
+This is the basic usage of the command line utility.
+::
+$shapeshift [shapefile] [country_code] [level[0|1|2] <xls|csv|json> <outfile>
+
+Note that you pass the shapefile name with a file extension.  There should be at
+least two file with the same name and extensions .dbf and .shp in the same
+directory. 
+
+The level indicates wheather the shapfile you are reading is country level (level 0),
+statelevel (i.e.subdivision / level 1) or county level (i.e. level 2).
 
 The output format options are "xls" for Excel, "csv" for comma seperated value
 (we use pipes instead of commas), or json for json output.
@@ -57,8 +63,13 @@ stdout in json.
 
 An example converting a state(level 1) shapefile to a CSV file
 ::
-    $ python shapeshifter.py nigeria_states.dbf NG 1 csv nigeria_states.csv
+    $ shapeshift nigeria_country_boundary NG 1 csv nigeria_states.csv
+
+
+An example converting a state(level 1) shapefile to a CSV file
+::
+    $ shapeshifter nigeria_states NG 1 csv nigeria_states.csv
 
 An example converting a county(level 2) shapefile to a JSON file
 ::
-    $ python shapeshifter.py nigeria_lev2.dbf NG 2 json nigeria_lev2.json
+    $ shapeshift nigeria_lev2 NG 2 json nigeria_lev2.json
