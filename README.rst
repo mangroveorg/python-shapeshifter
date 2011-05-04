@@ -1,6 +1,5 @@
 python-shapeshifter - by Alan Viars 2011
 version 0.0.1
-========================================
 
 Homepage:
 =========
