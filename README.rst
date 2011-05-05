@@ -62,7 +62,7 @@ the file name out.[json|csv|xls] is used.
 If you do not specify an output format (or file), then the result is dumped to
 stdout in json.
 
-An example converting a state(level 1) shapefile to a CSV file
+An example converting a state(level 0) shapefile to a CSV file
 ::
     $ shapeshift nigeria_country_boundary NG 1 csv nigeria_states.csv
 
