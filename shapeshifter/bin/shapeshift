@@ -12,7 +12,7 @@ if __name__ == "__main__":
     
         try:
             if len(sys.argv)<4:
-                print "Usage: shapeshifter.py shapefile.dbf country_code level[0|1|2] <xls|csv|json> <outfile>"
+                print "Usage: shapeshift shapefile country_code level[0|1|2] <xls|csv|json> <outfile>"
                 sys.exit(1)
             
             filename =  sys.argv[1]
@@ -28,10 +28,10 @@ if __name__ == "__main__":
                 elif level=="0":
                     l=extract_country_data_from_shapfile(filename, country_code)
                 else:
-                    print "Usage: shapeshifter.py shapefile.dbf country_code level[0|1|2] <xls|csv|json> <outfile>"
+                    print "Usage: shapeshift shapefile country_code level[0|1|2] <xls|csv|json|geojson> <outfile>"
                     sys.exit(1)
             else:
-                print "Usage: shapeshifter.py shapefile.dbf country_code level[0|1|2] <xls|csv|json> <outfile>"
+                print "Usage: shapeshift shapefile country_code level[0|1|2] <xls|csv|json|geojson> <outfile>"
                 sys.exit(1)
                 
             if len(sys.argv)>=5:  
@@ -55,13 +55,20 @@ if __name__ == "__main__":
                         convert2json(l, sys.argv[5])
                     else:
                         convert2json(l)
+                        
+                elif sys.argv[4]=="geojson":
+                    print "Building GeoJSON fixture file....."
+                    if len(sys.argv)>=6:
+                        convert2geojson(l, sys.argv[5])
+                    else:
+                        convert2geojson(l)        
+                        
                 else:
-                    print "Usage: shapeshifter.py shapefile.dbf country_code level[0|1|2] <xls|csv|json> <outfile>"
+                    print "Usage: shapeshift shapefile country_code level[0|1|2] <xls|csv|json|geojson> <outfile>"
                     sys.exit(1)
             else:
                 print "No output format specified so dumping results to stdout as json...."
-                for i in l:
-                    print json.dumps(i, indent=4)
+                convert2geojson(l, file_or_print="print")
         except:
             print sys.exc_info()
 

@@ -81,7 +81,7 @@ def extract_lev2_data_from_shapfile(shape_path, country_code):
 
         centroidpoint = centroid.representative_point()._get_coords()[0]
         d['geometry_centroid']=list(centroidpoint)
-        
+        d['bounds']=list(centroid.bounds)
         l.append(d) 
         feat.Destroy()
         feat = lyr.GetNextFeature()
@@ -154,7 +154,7 @@ def extract_state_data_from_shapfile(shape_path, country_code):
 
         centroidpoint = centroid.representative_point()._get_coords()[0]
         d['geometry_centroid']=list(centroidpoint)
-
+        d['bounds']=list(centroid.bounds)
         #print d
         l.append(d) 
         feat.Destroy()
@@ -217,6 +217,7 @@ def extract_country_data_from_shapfile(shape_path, country_code):
         centroidpoint = centroid.representative_point()._get_coords()[0]
         d['geometry_centroid']=list(centroidpoint)
 
+        d['bounds']=list(centroid.bounds)
         
         #print d
         l.append(d) 
@@ -251,7 +252,55 @@ def convert2json(l, outfile="out.json"):
     FILE.writelines(json.dumps(l, indent=4))
     FILE.close()
 
+def convert2geojson(l, outfile="GeoJSON-out.json", extra_properties=(),
+                    file_or_print="file"):
     
+    property_index=0
+    #make sure the extra properties list and the shape list are the same size
+    if extra_properties:
+        if len(l)!=len(extra_properties):
+            print "FATAL ERROR: Extra properties list and shape list must be the same length!"
+            sys.exit(1)
+    
+    """create a feature collection boilerplate"""
+    feature_collection_boiler={"type": "FeatureCollection", "features":[]}
+    
+    """create a feature biolerplate"""
+    feature_boiler={"type": "Feature",
+       "geometry":{"type": None,
+                   "coordinates": []},
+       "properties":{}  
+      }
+    
+    #iterate over our list of shapes
+    for i in l:
+        #create a new feature from our boilerplate
+        f=feature_boiler
+        #build the geometry
+        f["geometry"]["type"]=i["geometry_type"]
+        f["geometry"]["coordinates"]=i["geometry_coordinates"]
+        # erase the geometry from out shape dict and stuff everything else
+        # in the properties
+        del i["geometry_type"]
+        del i["geometry_coordinates"]
+        f["properties"]=i
+        #Add extra properties if they exist.
+        if extra_properties:
+            f["properties"].update(extra_properties[property_index])
+        
+        #append the feature to the feature collection
+        feature_collection_boiler["features"].append(f)
+        #increment the extra property index
+        property_index+=1
+    if file_or_print=="file":
+        FILE = open(outfile,"w")
+        # Write all the lines at once:
+        FILE.writelines(json.dumps(feature_collection_boiler, indent=4))
+        FILE.close()
+    else:
+        print json.dumps(feature_collection_boiler, indent=4)
+    return feature_collection_boiler
+
 def convert2xls(l, outfile="out.xls"):
     datatruncated=False
     """create the spreadsheet"""
@@ -282,11 +331,15 @@ def convert2xls(l, outfile="out.xls"):
     
     wbk.save(outfile)
     if datatruncated==True:
-        print "!!! WARNING !!! - Data was truncated because it was too long!"
+        print "!!! WARNING !!! - Some data was truncated because it was too long!"
 
 if __name__ == "__main__":
     
         try:
+            if len(sys.argv)<4:
+                print "Usage: shapeshifter.py shapefile.dbf country_code level[0|1|2] <xls|csv|json> <outfile>"
+                sys.exit(1)
+                
             filename =  sys.argv[1]
             country_code =  sys.argv[2]
             level= sys.argv[3]
@@ -300,10 +353,10 @@ if __name__ == "__main__":
                 elif level=="0":
                     l=extract_country_data_from_shapfile(filename, country_code)
                 else:
-                    print "Usage: shapeshifter.py shapefile.dbf country_code level[0|1|2] <xls|csv|json> <outfile>"
+                    print "Usage: python shapeshifter.py shapefile country_code level[0|1|2] <xls|csv|json|geojson> <outfile>"
                     sys.exit(1)
             else:
-                print "Usage: shapeshifter.py shapefile.dbf country_code level[0|1|2] <xls|csv|json> <outfile>"
+                print "Usage: python shapeshifter.py shapefile country_code level[0|1|2] <xls|csv|json|geojson> <outfile>"
                 sys.exit(1)
                 
             if len(sys.argv)>=5:  
@@ -327,13 +380,20 @@ if __name__ == "__main__":
                         convert2json(l, sys.argv[5])
                     else:
                         convert2json(l)
+                        
+                elif sys.argv[4]=="geojson":
+                    print "Building GeoJSON fixture file....."
+                    if len(sys.argv)>=6:
+                        convert2geojson(l, sys.argv[5])
+                    else:
+                        convert2geojson(l)
                 else:
-                    print "Usage: shapeshifter.py shapefile.dbf country_code level[0|1|2] <xls|csv|json> <outfile>"
+                    print "Usage: python shapeshifter.py shapefile country_code level[0|1|2] <xls|csv|json|geojson> <outfile>"
                     sys.exit(1)
             else:
                 print "No output format specified so dumping results to stdout as json...."
-                for i in l:
-                    print json.dumps(i, indent=4)
+                convert2geojson(l, file_or_print="print")
+                
         except:
             print "Error."
             print sys.exc_info()
