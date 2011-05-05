@@ -94,8 +94,9 @@ The package defines the following methods.
 * convert2xls(l, outfile="out.xls"):
 
 
-Documentation for each is inside each function.  Below is the code for shapeshift
-which illustrates how these functions are used.
+Detailed documentation for each function is inside each function.
+
+Below is the code for shapeshift which illustrates how these functions are used.
 ::
     #!/usr/bin/env python
     # -*- coding: utf-8 -*-
