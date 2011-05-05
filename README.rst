@@ -38,7 +38,7 @@ An "Old school" install
 	$ cd python-shapeshifer
 	$ (sudo) python setup.py installl
 
-Command line Utility Usage:
+Command-line Utility Usage:
 ===========================
 
 This is the basic usage of the command line utility.
