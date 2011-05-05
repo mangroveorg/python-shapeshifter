@@ -1,0 +1,67 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+# vim: ai ts=4 sts=4 et sw=4
+import os,sys,json
+from  shapeshifter.shapeshifter import extract_lev2_data_from_shapfile
+from  shapeshifter.shapeshifter import extract_state_data_from_shapfile
+from  shapeshifter.shapeshifter import extract_country_data_from_shapfile
+from  shapeshifter.shapeshifter import convert2xls,  convert2csv, convert2json
+
+
+if __name__ == "__main__":
+    
+        try:
+            if len(sys.argv)<4:
+                print "Usage: shapeshifter.py shapefile.dbf country_code level[0|1|2] <xls|csv|json> <outfile>"
+                sys.exit(1)
+            
+            filename =  sys.argv[1]
+            country_code =  sys.argv[2]
+            level= sys.argv[3]
+            if len(sys.argv)>=4:    
+                
+                if level=="2":
+                    l=extract_lev2_data_from_shapfile(filename, country_code)
+                elif level=="1":
+                    l=extract_state_data_from_shapfile(filename, country_code)
+                    
+                elif level=="0":
+                    l=extract_country_data_from_shapfile(filename, country_code)
+                else:
+                    print "Usage: shapeshifter.py shapefile.dbf country_code level[0|1|2] <xls|csv|json> <outfile>"
+                    sys.exit(1)
+            else:
+                print "Usage: shapeshifter.py shapefile.dbf country_code level[0|1|2] <xls|csv|json> <outfile>"
+                sys.exit(1)
+                
+            if len(sys.argv)>=5:  
+                if sys.argv[4]=="xls":
+                    print "Building xls file...."
+                    if len(sys.argv)>=6:
+                        convert2xls(l, sys.argv[5])
+                    else:
+                        convert2xls(l)
+                
+                elif sys.argv[4]=="csv":
+                    print "Building pipe delimeted csv file....."
+                    if len(sys.argv)>=6:
+                        convert2csv(l, sys.argv[5])
+                    else:
+                        convert2csv(l)
+                
+                elif sys.argv[4]=="json":
+                    print "Building JSON fixture file....."
+                    if len(sys.argv)>=6:
+                        convert2json(l, sys.argv[5])
+                    else:
+                        convert2json(l)
+                else:
+                    print "Usage: shapeshifter.py shapefile.dbf country_code level[0|1|2] <xls|csv|json> <outfile>"
+                    sys.exit(1)
+            else:
+                print "No output format specified so dumping results to stdout as json...."
+                for i in l:
+                    print json.dumps(i, indent=4)
+        except:
+            print sys.exc_info()
+
