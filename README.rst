@@ -53,7 +53,8 @@ The level indicates wheather the shapfile you are reading is country level (leve
 statelevel (i.e.subdivision / level 1) or county level (i.e. level 2).
 
 The output format options are "xls" for Excel, "csv" for comma seperated value
-(we use pipes instead of commas), or json for json output.
+(we use pipes instead of commas), "json" for a flat json output matching the csv,
+or "geojson" to output a FeatureCollection in GeoJSON format.
 
 The outfile is the name of the file the output is written.  If not specified,
 the file name out.[json|csv|xls] is used.
