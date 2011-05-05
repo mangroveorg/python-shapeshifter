@@ -15,6 +15,18 @@ from shapely.wkb import loads
 
 
 def extract_lev2_data_from_shapfile(shape_path, country_code):
+    """
+    Extracts county/LGA (level 2) data from a shapefile
+    
+    Requires:
+        - A shape file path (without an extension)
+        - A country code
+    
+    Returns:
+        - A list of dicts containing the shapefile information
+    """
+    
+    
     dbf="%s.dbf" % (shape_path)
     shp="%s.shp" % (shape_path)
 
@@ -91,6 +103,17 @@ def extract_lev2_data_from_shapfile(shape_path, country_code):
     return l
 
 def extract_state_data_from_shapfile(shape_path, country_code):
+    """
+    Extracts state/subdivision (level 1) data from a shapefile
+    
+    Requires:
+        - A shape file path (without an extension)
+        - A country code
+    
+    Returns:
+        - A list of dicts containing the shapefile information
+    """
+    
     dbf="%s.dbf" % (shape_path)
     shp="%s.shp" % (shape_path)
 
@@ -165,6 +188,18 @@ def extract_state_data_from_shapfile(shape_path, country_code):
     return l
 
 def extract_country_data_from_shapfile(shape_path, country_code):
+    """
+    Extracts country (level 0) data from a shapefile
+    
+    Requires:
+        - A shape file path (without an extension)
+        - A country code
+    
+    Returns:
+        - A list of dicts containing the shapefile information
+    """
+    
+    
     dbf="%s.dbf" % (shape_path)
     shp="%s.shp" % (shape_path)
     
@@ -229,12 +264,21 @@ def extract_country_data_from_shapfile(shape_path, country_code):
     return l
 
 def convert2csv(l, outfile="out.csv"):
+    """
+    Convert a list of dicts containing shape information to
+    pipe-delimeted CSV and save it to a file.
     
+    Requires:
+        l : a list of dicts containing shape information
+    
+    Accepts:
+        outfile: An output file name.
+    
+    Returns:
+        None
+    """
     csvWriter = csv.writer(open(outfile, 'wb'), delimiter='|',
                          quotechar='|', quoting=csv.QUOTE_MINIMAL)
-
-    #csvWriter.writerow(['Spam'] * 5 + ['Baked Beans'])
-    #csvWriter.writerow(['Spam', 'Lovely Spam', 'Wonderful Spam'])
     
     """get the keys"""
     keys=l[0].keys()
@@ -245,16 +289,52 @@ def convert2csv(l, outfile="out.csv"):
     for i in l:
         values=i.values()
         csvWriter.writerow(values)
+    return None
 
 def convert2json(l, outfile="out.json"):
+    """
+    Convert a list of dicts containing shape information to
+    flat JSON and save it to a file.
+    
+    Requires:
+        l : a list of dicts containing shape information
+    
+    Accepts:
+        outfile: An output file name.
+    
+    Returns:
+        None
+    """
+    
+    
     FILE = open(outfile,"w")
     # Write all the lines at once:
     FILE.writelines(json.dumps(l, indent=4))
     FILE.close()
+    return None
 
 def convert2geojson(l, outfile="GeoJSON-out.json", extra_properties=(),
                     file_or_print="file"):
+    """
+    Convert a list of dicts containing shape information to
+    a GeoJSON FeatureCollection and save it to a file or print it to
+    stdout.
     
+    Requires:
+        l : a list of dicts containing shape information
+    
+    Accepts:
+        outfile: An output file name.
+        
+        extra_properties: A list of dicts contaioning extra properties.
+            This must be the same length as "l" defined above.
+        
+        file_or_print: A flag indicating weather to save the data to file
+            or print it to stdout.
+    
+    Returns:
+        A Python dict matching the FeatureCollection 
+    """
     property_index=0
     #make sure the extra properties list and the shape list are the same size
     if extra_properties:
@@ -302,6 +382,20 @@ def convert2geojson(l, outfile="GeoJSON-out.json", extra_properties=(),
     return feature_collection_boiler
 
 def convert2xls(l, outfile="out.xls"):
+    """
+    Convert a list of dicts containing shape information to
+    Micorsoft Excel and save it to an xls file.
+    
+    Requires:
+        l : a list of dicts containing shape information
+    
+    Accepts:
+        outfile: An output file name.
+    
+    Returns:
+        None
+    """
+    
     datatruncated=False
     """create the spreadsheet"""
     wbk = xlwt.Workbook()
@@ -332,7 +426,7 @@ def convert2xls(l, outfile="out.xls"):
     wbk.save(outfile)
     if datatruncated==True:
         print "!!! WARNING !!! - Some data was truncated because it was too long!"
-
+    return None
 if __name__ == "__main__":
     
         try:
