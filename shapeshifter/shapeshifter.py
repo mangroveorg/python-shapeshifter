@@ -345,33 +345,30 @@ def convert2geojson(l, outfile="GeoJSON-out.json", extra_properties=(),
     """create a feature collection boilerplate"""
     feature_collection_boiler={"type": "FeatureCollection", "features":[]}
     
-    """create a feature biolerplate"""
-    feature_boiler={"type": "Feature",
-       "geometry":{"type": None,
-                   "coordinates": []},
-       "properties":{}  
-      }
-    
+    featurelist=[]
     #iterate over our list of shapes
     for i in l:
         #create a new feature from our boilerplate
-        f=feature_boiler
+        f={}
+        #print f
         #build the geometry
-        f["geometry"]["type"]=i["geometry_type"]
-        f["geometry"]["coordinates"]=i["geometry_coordinates"]
+        f["geometry"]={"type":i["geometry_type"], "coordinates": i["geometry_coordinates"]}
         # erase the geometry from out shape dict and stuff everything else
         # in the properties
         del i["geometry_type"]
         del i["geometry_coordinates"]
         f["properties"]=i
+
         #Add extra properties if they exist.
         if extra_properties:
             f["properties"].update(extra_properties[property_index])
         
-        #append the feature to the feature collection
-        feature_collection_boiler["features"].append(f)
-        #increment the extra property index
+        featurelist.append(f)
+
         property_index+=1
+    
+    feature_collection_boiler['features']=featurelist
+
     if file_or_print=="file":
         FILE = open(outfile,"w")
         # Write all the lines at once:
