@@ -8,7 +8,20 @@ def query_georegistry(URL,
                   GR_SERVER="http://api.georegistry.org",
                   USERNAME="user",
                   PASSWORD="pass"):
-    """Query GR"""
+    """Query GR
+    Requires:
+        URL - The site specific part of the URL representing the desired query.
+    
+    Accepts:
+        GR_SERVER - The specific server URL
+        USERNAME - The API user's user name
+        PASSWORD - The API user's password
+    
+    Returns:
+        string - A string containing the result of the HTTP query.
+                This should be valid JSON in all cases if debug
+                is turned off. 
+    """
     response_dict={}
     user_and_pass="%s:%s" % (USERNAME, PASSWORD)
     URL= GR_SERVER + str(URL)
@@ -31,6 +44,22 @@ def query_georegistry(URL,
 def create_feature_in_georegistry(kwargs, GR_SERVER, GR_USER, GR_PASS):
     """
         create a new feature in the GR
+    
+    Requires:
+        kwargs - The dict containing a information about the feature
+    
+    Accepts:
+        GR_SERVER - The specific server URL
+        USERNAME - The API user's user name
+        PASSWORD - The API user's password
+    
+    Returns:
+        string - A string containing the result of the HTTP query.
+                This should be valid JSON in all cases if debug
+                is turned off. 
+
+    
+    
     """
     pf=[]
     for i in kwargs:
